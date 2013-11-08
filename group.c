@@ -471,7 +471,7 @@ group_set_names(struct screen_ctx *sc)
 	tlen = len;
 	for (i = 0; i < sc->group_nonames; i++) {
 		slen = strlen(sc->group_names[i]) + 1;
-		(void)strlcpy(q, sc->group_names[i], tlen);
+		(void)strncpy(q, sc->group_names[i], tlen);
 		tlen -= slen;
 		q += slen;
 	}

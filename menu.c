@@ -103,7 +103,7 @@ menu_filter(struct screen_ctx *sc, struct menu_q *menuq, char *prompt,
 	mc.flags = flags;
 	if (prompt != NULL) {
 		evmask = MENUMASK | KEYMASK; /* accept keys as well */
-		(void)strlcpy(mc.promptstr, prompt, sizeof(mc.promptstr));
+		(void)strncpy(mc.promptstr, prompt, sizeof(mc.promptstr));
 		mc.hasprompt = 1;
 	} else {
 		evmask = MENUMASK;
@@ -111,7 +111,7 @@ menu_filter(struct screen_ctx *sc, struct menu_q *menuq, char *prompt,
 	}
 
 	if (initial != NULL)
-		(void)strlcpy(mc.searchstr, initial, sizeof(mc.searchstr));
+		(void)strncpy(mc.searchstr, initial, sizeof(mc.searchstr));
 	else
 		mc.searchstr[0] = '\0';
 
@@ -198,7 +198,7 @@ menu_complete_path(struct menu_ctx *mc)
 	    CWM_MENU_DUMMY, search_match_path_any, NULL)) != NULL) {
 		mr->abort = mi->abort;
 		mr->dummy = mi->dummy;
-		strlcpy(path, mi->text, sizeof(mi->text));
+		strncpy(path, mi->text, sizeof(mi->text));
 	}
 	
 	menuq_clear(&menuq);
@@ -207,7 +207,7 @@ menu_complete_path(struct menu_ctx *mc)
 		snprintf(mr->text, sizeof(mr->text), "%s \"%s\"",
 			mc->searchstr, path);
 	else if (!mr->abort)
-		strlcpy(mr->text,  mc->searchstr, sizeof(mr->text));
+		strncpy(mr->text,  mc->searchstr, sizeof(mr->text));
 	free(path);
 	return (mr);
 }
@@ -260,7 +260,7 @@ menu_handle_key(XEvent *e, struct menu_ctx *mc, struct menu_q *menuq,
 		 */
 		if ((mi = TAILQ_FIRST(resultq)) == NULL) {
 			mi = xmalloc(sizeof *mi);
-			(void)strlcpy(mi->text,
+			(void)strncpy(mi->text,
 			    mc->searchstr, sizeof(mi->text));
 			mi->dummy = 1;
 		}
@@ -285,7 +285,7 @@ menu_handle_key(XEvent *e, struct menu_ctx *mc, struct menu_q *menuq,
 			/*
 			 * Put common prefix of the results into searchstr
 			 */
-			(void)strlcpy(mc->searchstr,
+			(void)strncpy(mc->searchstr,
 					mi->text, sizeof(mc->searchstr));
 			while ((mi = TAILQ_NEXT(mi, resultentry)) != NULL) {
 				i = 0;
@@ -312,7 +312,7 @@ menu_handle_key(XEvent *e, struct menu_ctx *mc, struct menu_q *menuq,
 
 	if (chr[0] != '\0') {
 		mc->changed = 1;
-		(void)strlcat(mc->searchstr, chr, sizeof(mc->searchstr));
+		(void)strncat(mc->searchstr, chr, sizeof(mc->searchstr));
 	}
 
 	mc->noresult = 0;

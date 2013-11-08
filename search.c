@@ -163,7 +163,7 @@ search_print_client(struct menu *mi, int list)
 			diff = strlen(cc->name);
 		}
 
-		(void)strlcpy(buf, mi->print, sizeof(buf));
+		(void)strncpy(buf, mi->print, sizeof(buf));
 		(void)snprintf(mi->print, sizeof(mi->print),
 		    "%s:%.*s%s", buf, diff, cc->name, marker);
 	}
@@ -179,8 +179,8 @@ search_match_path(struct menu_q *menuq, struct menu_q *resultq, char *search, in
 
 	TAILQ_INIT(resultq);
 
-	(void)strlcpy(pattern, search, sizeof(pattern));
-	(void)strlcat(pattern, "*", sizeof(pattern));
+	(void)strncpy(pattern, search, sizeof(pattern));
+	(void)strncat(pattern, "*", sizeof(pattern));
 
 	if (glob(pattern, GLOB_MARK, NULL, &g) != 0)
 		return;
@@ -188,7 +188,7 @@ search_match_path(struct menu_q *menuq, struct menu_q *resultq, char *search, in
 		if ((flag & PATH_EXEC) && access(g.gl_pathv[i], X_OK))
 			continue;
 		mi = xcalloc(1, sizeof(*mi));
-		(void)strlcpy(mi->text, g.gl_pathv[i], sizeof(mi->text));
+		(void)strncpy(mi->text, g.gl_pathv[i], sizeof(mi->text));
 		TAILQ_INSERT_TAIL(resultq, mi, resultentry);
 	}
 	globfree(&g);

@@ -184,7 +184,7 @@ sigchld_cb(int which)
 	errno = save_errno;
 }
 
-__dead void
+void
 usage(void)
 {
 	extern char	*__progname;

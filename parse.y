@@ -444,14 +444,11 @@ yylex(void)
 		if (p == buf + 1 && buf[0] == '-')
 			goto nodigits;
 		if (c == EOF || allowed_to_end_number(c)) {
-			const char *errstr = NULL;
 
 			*p = '\0';
-			yylval.v.number = strtonum(buf, LLONG_MIN,
-			    LLONG_MAX, &errstr);
-			if (errstr) {
-				yyerror("\"%s\" invalid number: %s",
-				    buf, errstr);
+			yylval.v.number = atoi(buf);
+			if (0 == yylval.v.number) {
+				yyerror("invalid number: %s", buf);
 				return (findeol());
 			}
 			return (NUMBER);
@@ -592,9 +589,9 @@ parse_config(const char *filename, struct conf *xconf)
 			TAILQ_INSERT_TAIL(&xconf->mousebindingq, mb, entry);
 		}
 
-		(void)strlcpy(xconf->termpath, conf->termpath,
+		(void)strncpy(xconf->termpath, conf->termpath,
 		    sizeof(xconf->termpath));
-		(void)strlcpy(xconf->lockpath, conf->lockpath,
+		(void)strncpy(xconf->lockpath, conf->lockpath,
 		    sizeof(xconf->lockpath));
 
 		for (i = 0; i < CWM_COLOR_NITEMS; i++)

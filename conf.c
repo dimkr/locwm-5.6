@@ -41,13 +41,13 @@ conf_cmd_add(struct conf *c, char *image, char *label)
 {
 	/* "term" and "lock" have special meanings. */
 	if (strcmp(label, "term") == 0)
-		(void)strlcpy(c->termpath, image, sizeof(c->termpath));
+		(void)strncpy(c->termpath, image, sizeof(c->termpath));
 	else if (strcmp(label, "lock") == 0)
-		(void)strlcpy(c->lockpath, image, sizeof(c->lockpath));
+		(void)strncpy(c->lockpath, image, sizeof(c->lockpath));
 	else {
 		struct cmd *cmd = xmalloc(sizeof(*cmd));
-		(void)strlcpy(cmd->image, image, sizeof(cmd->image));
-		(void)strlcpy(cmd->label, label, sizeof(cmd->label));
+		(void)strncpy(cmd->image, image, sizeof(cmd->image));
+		(void)strncpy(cmd->label, label, sizeof(cmd->label));
 		TAILQ_INSERT_TAIL(&c->cmdq, cmd, entry);
 	}
 }
@@ -80,7 +80,7 @@ conf_ignore(struct conf *c, char *val)
 
 	wm = xcalloc(1, sizeof(*wm));
 
-	(void)strlcpy(wm->title, val, sizeof(wm->title));
+	(void)strncpy(wm->title, val, sizeof(wm->title));
 
 	TAILQ_INSERT_TAIL(&c->ignoreq, wm, entry);
 }
@@ -242,8 +242,8 @@ conf_init(struct conf *c)
 		c->color[i] = xstrdup(color_binds[i]);
 
 	/* Default term/lock */
-	(void)strlcpy(c->termpath, "xterm", sizeof(c->termpath));
-	(void)strlcpy(c->lockpath, "xlock", sizeof(c->lockpath));
+	(void)strncpy(c->termpath, "xterm", sizeof(c->termpath));
+	(void)strncpy(c->lockpath, "xlock", sizeof(c->lockpath));
 
 	(void)snprintf(c->known_hosts, sizeof(c->known_hosts), "%s/%s",
 	    homedir, ".ssh/known_hosts");
@@ -565,16 +565,16 @@ int
 conf_bind_mouse(struct conf *c, char *name, char *binding)
 {
 	struct mousebinding	*current_binding;
-	const char		*errstr, *substring;
+	const char		*substring;
 	u_int			 button, i, mask;
 
 	current_binding = xcalloc(1, sizeof(*current_binding));
 	substring = conf_bind_getmask(name, &mask);
 	current_binding->modmask |= mask;
 
-	button = strtonum(substring, 1, 5, &errstr);
-	if (errstr)
-		warnx("button number is %s: %s", errstr, substring);
+	button = atoi(substring);
+	if ((1 > button) || (5 < button))
+		warnx("button number is: %s", substring);
 
 	for (i = 0; i < nitems(mouse_btns); i++) {
 		if (button == mouse_btns[i]) {
@@ -582,7 +582,7 @@ conf_bind_mouse(struct conf *c, char *name, char *binding)
 			break;
 		}
 	}
-	if (!current_binding->button || errstr) {
+	if (!current_binding->button) {
 		free(current_binding);
 		return (0);
 	}

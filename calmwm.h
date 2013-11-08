@@ -365,7 +365,7 @@ enum {
 extern Atom				 cwmh[CWMH_NITEMS];
 extern Atom				 ewmh[EWMH_NITEMS];
 
-__dead void		 usage(void);
+void		 usage(void);
 
 void			 client_applysizehints(struct client_ctx *);
 void			 client_config(struct client_ctx *);

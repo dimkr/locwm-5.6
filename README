@@ -7,16 +7,11 @@
 Overview
 ========
 
-locwm is a Linux (https://www.kernel.org/) port of cwm from OpenBSD 5.4
+locwm is a Linux (https://www.kernel.org/) port of cwm from OpenBSD
 (http://www.openbsd.org/).
 
 It is a lightweight window manager which makes extensive use of keyboard
 shortcuts and consumes very little screen real estate.
-
-Building
-========
-
-  CC=cc CFLAGS="-Os" ./build.sh
 
 Legal Information
 =================

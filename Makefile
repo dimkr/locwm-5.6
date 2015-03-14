@@ -1,24 +1,38 @@
-# $OpenBSD: Makefile,v 1.20 2013/05/19 23:38:20 okan Exp $
+CC ?= cc
+CFLAGS ?= -O2
+LDFLAGS ?=
+YACC ?= yacc
 
-.include <bsd.xconf.mk>
+DESTDIR ?= /
+PREFIX ?= usr
+BIN_DIR ?= $(PREFIX)/bin
+MAN_DIR ?= $(PREFIX)/share/man
 
-PROG=		cwm
+SRCS = $(wildcard *.c) parse.c
+OBJECTS = $(SRCS:.c=.o) parse.o
+HEADERS = $(wildcard *.h)
 
-SRCS=		calmwm.c screen.c xmalloc.c client.c menu.c \
-		search.c util.c xutil.c conf.c xevents.c group.c \
-		kbfunc.c mousefunc.c parse.y
+CFLAGS += -std=gnu99 -Wall -pedantic -D__dead="" \
+          $(shell pkg-config --cflags xft freetype2 xinerama xrandr x11 \
+                  libbsd-overlay)
+LDFLAGS += $(shell pkg-config --libs xft freetype2 xinerama xrandr x11 libbsd)
 
-CPPFLAGS+=	-I${X11BASE}/include -I${X11BASE}/include/freetype2 -I${.CURDIR}
+all: cwm
 
-CFLAGS+=	-Wall
+parse.c: parse.y
+	$(YACC) -o $@ $^
 
-LDADD+=		-L${X11BASE}/lib -lXft -lXrender -lX11 -lxcb -lXau -lXdmcp \
-		-lfontconfig -lexpat -lfreetype -lz -lXinerama -lXrandr -lXext
+%.o: %.c $(HEADERS)
+	$(CC) -c -o $@ $< $(CFLAGS)
 
-MANDIR=		${X11BASE}/man/man
-MAN=		cwm.1 cwmrc.5
+cwm: $(OBJECTS)
+	$(CC) -o $@ $^ $(LDFLAGS)
 
-obj: _xenocara_obj
+clean:
+	rm -f cwm *.o parse.c
 
-.include <bsd.prog.mk>
-.include <bsd.xorg.mk>
+install: all
+	install -D -m 755 cwm $(DESTDIR)/$(BIN_DIR)/cwm
+	install -D -m 644 cwm.1 $(DESTDIR)/$(MAN_DIR)/man1/cwm.1
+	install -D -m 644 cwmrc.5 $(DESTDIR)/$(MAN_DIR)/man5/cwmrc.5
+	install -D -m 644 README $(DESTDIR)/$(DOC_DIR)/README

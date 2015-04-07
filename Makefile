@@ -12,7 +12,7 @@ SRCS = $(wildcard *.c) parse.c
 OBJECTS = $(SRCS:.c=.o) parse.o
 HEADERS = $(wildcard *.h)
 
-CFLAGS += -std=gnu99 -Wall -pedantic -D__dead="" \
+CFLAGS += -std=gnu99 -Wall -pedantic -D_GNU_SOURCE -D__dead="" \
           $(shell pkg-config --cflags xft freetype2 xinerama xrandr x11 \
                   libbsd-overlay)
 LDFLAGS += $(shell pkg-config --libs xft freetype2 xinerama xrandr x11 libbsd)
